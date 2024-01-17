@@ -3,6 +3,7 @@ package com.flink.examples.datasetapi;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -91,6 +92,43 @@ public class Transformation {
             final DataSet<Tuple7<Integer, String, String, String, Integer, Double, String>> filteredData
                     = dataset.filter(filterFunction);
             filteredData.first(5).print();
+            System.out.println();
+
+            // Projection
+            final DataSet<Tuple2<Integer, Double>> orderProjections
+                    = computedValue.project(4, 7);
+
+            orderProjections.first(5).print();
+            System.out.println();
+
+            final DataSet<Tuple2<Integer, Double>> sumGroupingBy
+                    = orderProjections.groupBy(0).sum(1);
+
+            sumGroupingBy.first(5).print();
+            System.out.println();
+
+            // Total sales
+            final DataSet<Tuple8<Integer, String, String, String, Integer, Double, String, Double>> totalSales
+                    = computedValue.reduce(
+                    new ReduceFunction<Tuple8<Integer, String, String, String, Integer, Double, String, Double>>() {
+                        @Override
+                        public Tuple8<Integer, String, String, String, Integer, Double, String, Double> reduce(
+                                Tuple8<Integer, String, String, String, Integer, Double, String, Double> value1,
+                                Tuple8<Integer, String, String, String, Integer, Double, String, Double> value2) throws Exception {
+                            return new Tuple8<>(
+                                    value1.f0,
+                                    value1.f1,
+                                    value1.f2,
+                                    value1.f3,
+                                    value1.f4,
+                                    value1.f5,
+                                    value1.f6,
+                                    value1.f7 + value2.f7
+                            );
+                        }
+                    }
+            );
+            totalSales.first(5).print();
 
         } catch (Exception e) {
 
