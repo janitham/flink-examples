@@ -53,6 +53,11 @@ dependencies {
     // --------------------------------------------------------------
     implementation "org.apache.flink:flink-streaming-java:${flinkVersion}"
     implementation "org.apache.flink:flink-clients:${flinkVersion}"
+
+    // https://mvnrepository.com/artifact/org.apache.flink/flink-jdbc
+    implementation 'org.apache.flink:flink-jdbc_2.12:1.10.3'
+
+    implementation "org.postgresql:postgresql:42.2.23"
     // --------------------------------------------------------------
     // Dependencies that should be part of the shadow jar, e.g.
     // connectors. These must be in the flinkShadowJar configuration!
